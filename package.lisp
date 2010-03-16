@@ -12,4 +12,5 @@
    #:fp
    #:gc-p
    #:free
+   #:free-p
    #:this-fp))

@@ -1,10 +1,10 @@
 ;;; -*- lisp -*-
 
-(defpackage #:simple-finalizer
+(defpackage #:simple-finalizer-system
   (:use #:cl #:asdf))
-(in-package #:simple-finalizer)
+(in-package #:simple-finalizer-system)
 
-(defsystem :simple-finalizer
+(defsystem simple-finalizer
   :description "A simple Common Lisp finalizer for foreign objects when using CFFI and TRIVIAL-GARBAGE."
   :version "0.1"
   :author "Luke Crook <luke@balooga.com>"
@@ -15,9 +15,5 @@
 		    (pushnew :simple-finalizer *features*))
   :components
   ((:file "package")
-   (:file "simple-finalizer")
-   (:html-file "index")
-   (:doc-file "README")
-   (:doc-file "COPYING")
-   (:doc-file "CONTRIBUTORS"))
+   (:file "simple-finalizer"))
   :serial t)

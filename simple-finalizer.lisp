@@ -5,11 +5,13 @@
   ((foreign-pointer-to-object
     :reader fp
     :initform (error ":FP must not be NIL.")
-    :initarg :fp)
+    :initarg :fp
+    :documentation "Returns the foreign object reference.")
    (garbage-collect
     :reader gc-p
     :initform t
-    :initarg :gc)
+    :initarg :gc
+    :documentation "Returns `T` if the foreign object will be finalized.")
    (free-function
     :initform #'cffi:foreign-free
     :initarg :free))
@@ -29,9 +31,6 @@
       (unless foreign-free
         (error "`:FREE` is NIL. No function to free the foreign object defined."))
       (tg:finalize self (lambda () (funcall foreign-free foreign-pointer))))))
-
-(defgeneric fp (foreign-object)
-  (:documentation "Returns the foreign object reference."))
 
 (defgeneric free (foreign-object)
   (:documentation "An explicit cleanup method. When freed, `GC-P` will be NIL."))
@@ -64,6 +63,12 @@
   (:documentation "Returns the foreign object reference. This method may not be redefined by a subclass."))
 (defmethod this-fp ((self foreign-object))
   (slot-value self 'foreign-pointer-to-object))
+
+(defgeneric free-p (foreign-object)
+  (:documentation "Returns `T if the foreign object was previously deleted using `FREE`."))
+(defmethod free-p ((self foreign-object))
+  (and (not (gc-p self)) (not (fp self))))
+
 
 (defun simple-free (func-fp type)
   (declare (ignore type))
