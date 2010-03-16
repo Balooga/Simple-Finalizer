@@ -1,0 +1,56 @@
+-*- mode: org -*-
+
+* INTRODUCTION
+
+This is the README for SIMPLE-FINALIZER, a package that wraps the 
+finalizer functionality provided by TRIVIAL-GARBAGE and CFFI.
+
+SIMPLE-FINALIZER depends on TRIVIAL-GARBAGE and CFFI.
+ 
+ASDF packaging is provided; 
+
+(asdf:oos 'asdf:load-op :simple-finalizer)
+
+Once you have the system loaded, you can try the following example;
+ 
+(make-instance 'simfin:foreign-object :fp (cffi:foreign-alloc :char :count 20))
+
+(simfin:gc-p *)
+(simfin:free **)
+
+* DESCRIPTION
+
+FOREIGN-OBJECT is used to manage the lifecycle of a foreign object. 
+The foreign object contained within FOREIGN-OBJECT may be deleted explictly by calling FREE, 
+or automatically at such time that FOREIGN-OBJECT is finalized (at garbage collection).
+
+An important point to note is that the function passed in :FREE does not act as an object 
+'destructor' in the C++ or Java sense because there are no destructors in Common Lisp. 
+:FREE is not called when FOREIGN-OBJECT goes out of scope, but rather when the LISP
+object is being garbage collected. Another point to note is that by the time the function 
+in :FREE is called, the CLOS slots for the object will already have been garbage-collected.
+
+Use MAKE-INSTANCE to create a new FOREIGN-OBJECT, as show below.
+
+(make-instance 'simfin:foreign-object :fp <foreign-object> :free <free-function>)
+
+FOREIGN-OBJECT is wrapper around the foreign object stored in FP.
+Finalizes the foreign object using the function in :FREE when GC-P is T when the wrapper is garbage collected. 
+Defaults to CFFI:FOREIGN-FREE if not specified. 
+
+SIMPLE-FINALIZER provides the following functions;
+
+** FP
+   Returns the foreign object reference.
+** THIS-FP
+   Returns the foreign object reference. This method may not be redefined by a subclass.
+** FREE
+   An explicit cleanup method. When freed, `GC-P` will be NIL.
+** GC-P
+   Enables or disables finalization.
+  
+Comments, criticisms, additions, and optimizations are welcome at the
+below email address.
+ 
+Luke Crook
+luke@balooga.com
